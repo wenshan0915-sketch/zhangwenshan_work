@@ -33,5 +33,7 @@ http://127.0.0.1:8765/
 部署提醒：
 
 - 不要把 Kimi key 写进 `index.html`、前端 JS 或公开仓库。
-- 如果只是静态托管页面，不能安全地直连 Kimi API；需要把 `server.mjs` 一起部署到你自己的服务端环境。
+- Vercel 部署时，仓库根目录就是项目根目录，`index.html` 会作为首页，`api/chat.js` 会作为 `/api/chat` 接口。
+- Vercel 环境变量里至少需要配置 `KIMI_API_KEY`，可选配置 `KIMI_MODEL`、`ALLOWED_ORIGINS`、`RATE_LIMIT_MAX`、`RATE_LIMIT_WINDOW_MS`、`MAX_MESSAGE_LENGTH`。
+- 如果部署到其他静态托管平台，不能安全地直连 Kimi API；需要把 `server.mjs` 或同等后端接口一起部署到你自己的服务端环境。
 - 当前服务已加上本地私密配置文件、会话 cookie 和基础限流，适合公开网页接入时做第一层保护。

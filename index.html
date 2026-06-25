@@ -1895,6 +1895,7 @@
       }
       const response = await fetch("/api/chat", {
         method: "POST",
+        credentials: "same-origin",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ message, hasAttachment, agent })
       });

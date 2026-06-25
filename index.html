@@ -749,6 +749,10 @@
       opacity: 0;
     }
 
+    .home .composer.is-typing:not(.has-attachment) .composer-main > * {
+      opacity: 1;
+    }
+
     .home .composer:not(.has-attachment) .round-mini:not(.plus),
     .home .composer:not(.has-attachment) .round-mini.plus .asset-icon,
     .home .composer:not(.has-attachment) .send-icon {
@@ -909,6 +913,7 @@
     }
 
     .round-mini.plus {
+      position: relative;
       box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, .92);
     }
 
@@ -925,12 +930,18 @@
       box-shadow: none;
     }
 
+    .round-mini.plus .asset-icon,
     .send-icon {
+      position: absolute;
+      inset: 0;
       display: none;
       width: 24px;
       height: 24px;
       place-items: center;
-      flex: 0 0 auto;
+    }
+
+    .round-mini.plus .asset-icon {
+      display: block;
     }
 
     .send-icon img {
@@ -1820,6 +1831,7 @@
     const homeAnswer = document.querySelector("[data-home-answer]");
     let toastTimer = 0;
     let homeReplyTimers = [];
+    const isHttpPreview = /^https?:$/i.test(window.location.protocol);
 
     function showToast(text) {
       window.clearTimeout(toastTimer);
@@ -1847,6 +1859,19 @@
       return hasAttachment ? "帮我分析这张图" : "你好";
     }
 
+    function buildHomeDemoReply(value, hasAttachment) {
+      if (hasAttachment && !value) {
+        return "我已经收到图片，正在识别画面信息和可用线索。";
+      }
+      if (/周报|日报|汇报/.test(value)) {
+        return "建议先按目标、进展、风险和下一步四段整理，我也可以继续帮你扩成完整周报。";
+      }
+      if (/社媒|推文|文案|选题|曝光|账号/.test(value)) {
+        return "这类需求适合先定内容主题，再拆平台表达、发布时间和互动动作。";
+      }
+      return "我会先拆解需求，再给出可以直接执行的方案。";
+    }
+
     function startHomeReply(value, hasAttachment) {
       clearHomeReplyTimers();
       homeUserMessage.textContent = formatHomePrompt(value, hasAttachment);
@@ -1863,6 +1888,11 @@
     }
 
     async function requestKimiReply(message, hasAttachment, agent) {
+      if (!isHttpPreview) {
+        return agent === "expert"
+          ? "当前是本地 HTML 预览模式，社媒专家结果已内置在页面里。"
+          : buildHomeDemoReply(message, hasAttachment);
+      }
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -1886,7 +1916,7 @@
         const reply = await requestKimiReply(value, hasAttachment, "home");
         homeAnswer.textContent = reply;
       } catch (error) {
-        homeAnswer.textContent = "Kimi 暂时没有连接成功，请稍后再试。";
+        homeAnswer.textContent = buildHomeDemoReply(value, hasAttachment);
         showToast(error.message);
       }
       home.dataset.mode = "answering";
@@ -2072,12 +2102,17 @@
         }
         if (form.closest(".expert")) {
           if (value || form.classList.contains("has-attachment")) {
-            showToast("正在请求 Kimi");
+            showToast(isHttpPreview ? "正在请求 Kimi" : "正在打开本地演示结果");
             try {
               const reply = await requestKimiReply(value, form.classList.contains("has-attachment"), "expert");
-              showToast(reply.slice(0, 36));
+              if (isHttpPreview) {
+                showToast(reply.slice(0, 36));
+              } else {
+                startExpertAnalysis();
+              }
             } catch (error) {
               showToast(error.message);
+              startExpertAnalysis();
             }
           } else {
             startExpertAnalysis();

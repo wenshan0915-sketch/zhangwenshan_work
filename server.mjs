@@ -1,9 +1,43 @@
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL(".", import.meta.url)));
+const envPath = join(root, ".env");
+
+function loadLocalEnv() {
+  if (!existsSync(envPath)) {
+    return;
+  }
+
+  const lines = readFileSync(envPath, "utf8").split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+    const equalIndex = trimmed.indexOf("=");
+    if (equalIndex <= 0) {
+      continue;
+    }
+    const key = trimmed.slice(0, equalIndex).trim();
+    if (!key || process.env[key]) {
+      continue;
+    }
+    let value = trimmed.slice(equalIndex + 1).trim();
+    if (
+      (value.startsWith("\"") && value.endsWith("\"")) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    process.env[key] = value;
+  }
+}
+
+loadLocalEnv();
+
 const port = Number(process.env.PORT || 8765);
 const apiKey = process.env.KIMI_API_KEY || process.env.MOONSHOT_API_KEY;
 

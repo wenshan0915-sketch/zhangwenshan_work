@@ -1,0 +1,2100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cielva Claw 社媒运营智能体 Android 原型</title>
+  <style>
+    @font-face {
+      font-family: "MiSans";
+      src: url("assets/fonts/MiSans-VF.ttf") format("truetype");
+      font-weight: 100 900;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --bg: #120c09;
+      --panel: rgba(62, 50, 42, .72);
+      --panel-strong: rgba(75, 61, 50, .9);
+      --line: rgba(255, 231, 198, .15);
+      --text: #f8f3ed;
+      --muted: rgba(248, 243, 237, .58);
+      --faint: rgba(248, 243, 237, .34);
+      --gold: #d49a55;
+      --gold-soft: #f0c98f;
+      --brown: #2a211b;
+      --card: #2b211d;
+      --shadow: 0 18px 45px rgba(0, 0, 0, .38);
+      font-family: "MiSans", -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: #090706;
+      color: var(--text);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .stage {
+      width: 360px;
+      height: 800px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+    }
+
+    .device {
+      position: relative;
+      width: 360px;
+      height: 800px;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .device::before {
+      display: none;
+    }
+
+    .screen {
+      position: relative;
+      width: 360px;
+      height: 800px;
+      overflow: hidden;
+      border-radius: 0;
+      background: var(--bg);
+      box-shadow: none;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 29% 10%, rgba(111, 76, 42, .38), transparent 30%),
+        radial-gradient(circle at 74% 50%, rgba(72, 43, 25, .17), transparent 42%),
+        linear-gradient(180deg, #15100d 0%, #100b08 42%, #160d08 100%);
+    }
+
+    .status-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 44px;
+      z-index: 14;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 35px 0 32px;
+      font-size: 15px;
+      font-weight: 650;
+      letter-spacing: 0;
+      pointer-events: none;
+    }
+
+    .system-icons {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #f4f1ed;
+      opacity: .95;
+    }
+
+    .icon {
+      width: 22px;
+      height: 22px;
+      display: inline-block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex: 0 0 auto;
+    }
+
+    .wifi-icon {
+      width: 20px;
+      height: 16px;
+      display: block;
+      opacity: .88;
+    }
+
+    .signal-icon {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .battery {
+      position: relative;
+      width: 19px;
+      height: 12px;
+      border-radius: 3px;
+      background: #f3f1ef;
+    }
+
+    .battery::after {
+      content: "";
+      position: absolute;
+      right: -3px;
+      top: 3px;
+      width: 2px;
+      height: 6px;
+      border-radius: 2px;
+      background: #f3f1ef;
+    }
+
+    .top-actions,
+    .chat-header {
+      position: absolute;
+      top: 64px;
+      left: 0;
+      right: 0;
+      height: 52px;
+      z-index: 13;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+
+    .chat-header {
+      padding: 0 16px 0 16px;
+      justify-content: flex-start;
+      gap: 12px;
+    }
+
+    .chat-header h1 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1;
+      letter-spacing: 0;
+      font-family: "MiSans";
+      font-weight: 400;
+      color: #fff7f0;
+      flex: 1;
+    }
+
+    .header-tools {
+      display: inline-flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      display: inline-grid;
+      place-items: center;
+      background: transparent;
+      border-radius: 50%;
+      transition: transform .16s ease, background .16s ease, opacity .16s ease;
+    }
+
+    .icon-btn:hover,
+    .icon-btn:focus-visible {
+      background: rgba(255, 255, 255, .08);
+      outline: 0;
+    }
+
+    .icon-btn:active {
+      transform: scale(.94);
+    }
+
+    .asset-icon {
+      width: 24px;
+      height: 24px;
+      display: block;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .top-actions .header-tools .icon-btn,
+    .chat-header .header-tools .icon-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+    }
+
+    .menu-orb {
+      width: 52px;
+      height: 52px;
+      margin-left: 0;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 26%, rgba(255, 255, 255, .18), transparent 32%),
+        linear-gradient(180deg, rgba(69, 69, 69, .94), rgba(45, 45, 45, .96));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .22),
+        inset 0 -13px 18px rgba(0, 0, 0, .26),
+        0 10px 24px rgba(0, 0, 0, .22);
+    }
+
+    .menu-orb .icon {
+      width: 25px;
+      height: 25px;
+      stroke-width: 2.7;
+    }
+
+    .menu-orb.asset-menu {
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      box-shadow: none;
+      flex: 0 0 40px;
+    }
+
+    .menu-orb.asset-menu .back-icon {
+      width: 40px;
+      height: 40px;
+      display: block;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .expert .chat-header > .icon-btn:first-child {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 26%, rgba(255, 255, 255, .18), transparent 32%),
+        linear-gradient(180deg, rgba(69, 69, 69, .94), rgba(45, 45, 45, .96));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .22),
+        inset 0 -13px 18px rgba(0, 0, 0, .26),
+        0 10px 24px rgba(0, 0, 0, .22);
+    }
+
+    .home {
+      position: absolute;
+      inset: 0;
+      opacity: 1;
+      transform: translateX(0);
+      transition: opacity .2s ease, transform .26s ease;
+    }
+
+    .home::before,
+    .home::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .home::before {
+      left: -139px;
+      top: -186px;
+      width: 424px;
+      height: 424px;
+      border-radius: 50%;
+      background: #515151;
+      opacity: .3;
+      filter: blur(150px);
+    }
+
+    .home::after {
+      left: -12px;
+      top: 513px;
+      width: 383px;
+      height: 336px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, rgba(163, 121, 69, .72), rgba(163, 121, 69, 0));
+      opacity: .12;
+      filter: blur(75px);
+    }
+
+    .home[data-mode="sent"]::before,
+    .home[data-mode="thinking"]::before,
+    .home[data-mode="answering"]::before {
+      left: -233px;
+      top: -181px;
+    }
+
+    .home[data-mode="sent"]::after,
+    .home[data-mode="thinking"]::after,
+    .home[data-mode="answering"]::after {
+      left: 13px;
+      top: 544px;
+      width: 356px;
+      height: 312px;
+      opacity: .15;
+    }
+
+    .home-main {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 221px;
+      z-index: 2;
+      transition: opacity .2s ease, transform .24s ease;
+    }
+
+    .mascot {
+      width: 120px;
+      height: 120px;
+      margin-left: 0;
+      border-radius: 0;
+      object-fit: contain;
+      display: block;
+      filter: none;
+    }
+
+    .greeting {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: -7px;
+      margin-left: 16px;
+      color: #f1b776;
+      font-size: 16px;
+      font-family: "MiSans";
+      font-weight: 500;
+      line-height: 1.08;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .greeting-text {
+      color: transparent;
+      background: linear-gradient(90deg, #C1844A 0%, #EECB96 52%, #EDDCC2 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .greeting strong {
+      color: inherit;
+      font-weight: 500;
+    }
+
+    .badge {
+      font-size: 11px;
+      line-height: 1;
+      color: #db9f58;
+      font-family: "MiSans";
+      font-weight: 300;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: rgba(105, 72, 42, .55);
+    }
+
+    .subline {
+      margin: 10px 0 12px 16px;
+      font-size: 14px;
+      line-height: 1.25;
+      font-family: "MiSans";
+      font-weight: 300;
+      color: #fff7ee;
+      letter-spacing: 0;
+    }
+
+    .suggestions {
+      display: grid;
+      row-gap: 12px;
+      width: max-content;
+      max-width: 100%;
+      margin-left: 16px;
+    }
+
+    .suggestion + .suggestion {
+      margin-top: 4px;
+    }
+
+    .suggestion:nth-child(3) {
+      margin-top: 0;
+    }
+
+    .suggestion {
+      height: 36px;
+      padding: 0 13px;
+      width: 234px;
+      border-radius: 8px;
+      color: #fff;
+      text-align: left;
+      font-size: 12px;
+      font-family: "MiSans";
+      font-weight: 300;
+      letter-spacing: 0;
+      background: #33291f;
+      box-shadow: inset 0 0 8px rgba(255, 255, 255, .3);
+      transition: transform .16s ease, filter .16s ease;
+    }
+
+    .suggestion:nth-child(2),
+    .suggestion:nth-child(3) {
+      width: 221px;
+    }
+
+    .home-chat {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+
+    .home[data-mode="sent"] .home-main,
+    .home[data-mode="thinking"] .home-main,
+    .home[data-mode="answering"] .home-main {
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+    }
+
+    .home[data-mode="sent"] .home-chat,
+    .home[data-mode="thinking"] .home-chat,
+    .home[data-mode="answering"] .home-chat {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .home-chat-avatar {
+      position: absolute;
+      left: 0;
+      top: 100px;
+      width: 120px;
+      height: 120px;
+      border-radius: 0;
+      object-fit: contain;
+      filter: none;
+    }
+
+    .home-chat-greeting {
+      position: absolute;
+      left: 16px;
+      top: 236px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #f1b776;
+      font-size: 16px;
+      line-height: 1.08;
+      font-family: "MiSans";
+      font-weight: 500;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .home-chat-greeting strong {
+      color: #efd6ba;
+      font-weight: 500;
+    }
+
+    .home-chat-subline {
+      position: absolute;
+      left: 16px;
+      top: 268px;
+      margin: 0;
+      color: #fff7ee;
+      font-size: 14px;
+      line-height: 1.25;
+      font-family: "MiSans";
+      font-weight: 300;
+      letter-spacing: 0;
+    }
+
+    .home-user-bubble,
+    .home-thinking-card,
+    .home-answer-card {
+      position: absolute;
+      border: 0;
+      color: #fff;
+      font-family: "MiSans";
+      letter-spacing: 0;
+      background: rgba(255, 255, 255, .08);
+      box-shadow:
+        inset 0 0 8px rgba(255, 255, 255, .16),
+        inset 0 -8px 16px rgba(0, 0, 0, .18);
+      mix-blend-mode: plus-lighter;
+    }
+
+    .home-user-bubble {
+      left: 236px;
+      top: 284px;
+      width: 108px;
+      min-height: 48px;
+      padding: 8px 13px;
+      border-radius: 20px 20px 2px 20px;
+      display: -webkit-box;
+      overflow: hidden;
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 300;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      transform: translateY(10px);
+      opacity: 0;
+      transition: opacity .22s ease, transform .24s ease;
+    }
+
+    .home-thinking-card {
+      left: 16px;
+      top: 356px;
+      width: 110px;
+      height: 50px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 13px 0 16px;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 300;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .22s ease, transform .24s ease;
+    }
+
+    .home-answer-card {
+      left: 16px;
+      top: 424px;
+      width: 218px;
+      min-height: 56px;
+      padding: 13px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 300;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .22s ease, transform .24s ease;
+    }
+
+    .home-thinking-star {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+      color: #e5b16c;
+      filter: drop-shadow(0 0 7px rgba(226, 166, 92, .45));
+      animation: starPulse 1.25s ease-in-out infinite;
+    }
+
+    .thinking-dots::after {
+      content: "";
+      animation: thinkingDots 1.2s steps(4, end) infinite;
+    }
+
+    .home[data-mode="sent"] .home-user-bubble,
+    .home[data-mode="thinking"] .home-user-bubble,
+    .home[data-mode="answering"] .home-user-bubble,
+    .home[data-mode="thinking"] .home-thinking-card,
+    .home[data-mode="answering"] .home-thinking-card,
+    .home[data-mode="answering"] .home-answer-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes starPulse {
+      0%,
+      100% {
+        transform: scale(.92) rotate(0deg);
+        opacity: .75;
+      }
+      50% {
+        transform: scale(1.08) rotate(9deg);
+        opacity: 1;
+      }
+    }
+
+    @keyframes thinkingDots {
+      0% {
+        content: "";
+      }
+      25% {
+        content: ".";
+      }
+      50% {
+        content: "..";
+      }
+      75%,
+      100% {
+        content: "...";
+      }
+    }
+
+    .suggestion:hover {
+      filter: brightness(1.06);
+    }
+
+    .suggestion:active {
+      transform: translateY(1px) scale(.99);
+    }
+
+    .composer {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 28px;
+      height: 64px;
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 20px 0 22px;
+      border-radius: 32px;
+      background: linear-gradient(180deg, rgba(58, 58, 58, .96), rgba(48, 48, 48, .96));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .17),
+        inset 0 2px 3px rgba(255, 255, 255, .08),
+        inset 0 -10px 18px rgba(0, 0, 0, .22),
+        0 10px 28px rgba(0, 0, 0, .28);
+      backdrop-filter: blur(14px);
+    }
+
+    .composer.has-attachment {
+      height: 151px;
+      display: grid;
+      grid-template-rows: 72px 48px;
+      align-content: space-between;
+      align-items: stretch;
+      gap: 11px;
+      padding: 16px 16px 11px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(58, 58, 58, .97), rgba(47, 47, 47, .98));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .16),
+        inset 0 2px 3px rgba(255, 255, 255, .08),
+        inset 0 -13px 21px rgba(0, 0, 0, .24),
+        0 12px 30px rgba(0, 0, 0, .34);
+    }
+
+    .attachment-row {
+      display: none;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .composer.has-attachment .attachment-row {
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .attachment-thumb,
+    .attachment-add {
+      width: 66px;
+      height: 66px;
+      border-radius: 8px;
+      flex: 0 0 auto;
+      overflow: hidden;
+    }
+
+    .attachment-thumb {
+      object-fit: cover;
+      display: block;
+      background: #17100c;
+    }
+
+    .attachment-add {
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .attachment-add .icon {
+      width: 28px;
+      height: 28px;
+      stroke-width: 1.8;
+    }
+
+    .composer-main {
+      display: contents;
+    }
+
+    .composer.has-attachment .composer-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .home .composer {
+      left: 0;
+      right: 0;
+      bottom: 20px;
+      height: 80px;
+      gap: 16px;
+      padding: 16px 23px 16px 35px;
+      border-radius: 0;
+      background: url("assets/home-bottom.png") center / 100% 100% no-repeat;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+    .home .composer:not(.has-attachment) .composer-main > * {
+      opacity: 0;
+    }
+
+    .home .composer:not(.has-attachment) .round-mini:not(.plus),
+    .home .composer:not(.has-attachment) .round-mini.plus .asset-icon,
+    .home .composer:not(.has-attachment) .send-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .home .composer:not(.has-attachment) input {
+      opacity: 1;
+      color: transparent;
+      caret-color: #fff;
+    }
+
+    .home .composer:not(.has-attachment) .round-mini.plus {
+      opacity: 1;
+    }
+
+    .home .composer.is-typing:not(.has-attachment) input,
+    .home[data-mode="sent"] .composer:not(.has-attachment) input,
+    .home[data-mode="thinking"] .composer:not(.has-attachment) input,
+    .home[data-mode="answering"] .composer:not(.has-attachment) input {
+      color: #fff;
+    }
+
+    .home .composer.has-text:not(.has-attachment) .round-mini.plus .asset-icon,
+    .home[data-mode="sent"] .composer:not(.has-attachment) .round-mini.plus .asset-icon,
+    .home[data-mode="thinking"] .composer:not(.has-attachment) .round-mini.plus .asset-icon,
+    .home[data-mode="answering"] .composer:not(.has-attachment) .round-mini.plus .asset-icon {
+      display: none;
+    }
+
+    .home .composer.has-text:not(.has-attachment) .send-icon,
+    .home[data-mode="sent"] .composer:not(.has-attachment) .send-icon,
+    .home[data-mode="thinking"] .composer:not(.has-attachment) .send-icon,
+    .home[data-mode="answering"] .composer:not(.has-attachment) .send-icon {
+      display: grid;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .home .composer.has-attachment {
+      left: 16px;
+      right: 16px;
+      bottom: 20px;
+      height: 135px;
+      padding: 0;
+      border-radius: 0;
+      background: url("assets/home-add-image.png") center / 100% 100% no-repeat;
+      box-shadow: none;
+      backdrop-filter: none;
+      cursor: pointer;
+    }
+
+    .home .composer.has-attachment .attachment-row,
+    .home .composer.has-attachment .composer-main {
+      display: none;
+    }
+
+    .expert .composer {
+      left: 0;
+      right: 0;
+      bottom: 20px;
+      height: 80px;
+      padding: 16px 23px 16px 35px;
+      border-radius: 0;
+      gap: 16px;
+      background: url("assets/home-bottom.png") center / 100% 100% no-repeat;
+      box-shadow: none;
+      backdrop-filter: none;
+    }
+
+    .expert .composer:not(.has-attachment) .round-mini:not(.plus) {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .expert .composer:not(.has-attachment) .round-mini.plus .asset-icon,
+    .expert .composer:not(.has-attachment) .send-icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .expert .composer:not(.has-attachment) input {
+      opacity: 1;
+      color: transparent;
+      caret-color: #fff;
+    }
+
+    .expert .composer.is-typing:not(.has-attachment) input {
+      color: #fff;
+    }
+
+    .expert .composer.has-text:not(.has-attachment) .round-mini.plus .asset-icon {
+      display: none;
+    }
+
+    .expert .composer.has-text:not(.has-attachment) .send-icon {
+      display: grid;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .expert .composer.has-attachment {
+      left: 16px;
+      right: 16px;
+      bottom: 20px;
+      height: 135px;
+      padding: 0;
+      border-radius: 0;
+      background: url("assets/home-add-image.png") center / 100% 100% no-repeat;
+      box-shadow: none;
+      backdrop-filter: none;
+      cursor: pointer;
+    }
+
+    .expert .composer.has-attachment .attachment-row,
+    .expert .composer.has-attachment .composer-main {
+      display: none;
+    }
+
+    .composer input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 16px;
+      font-family: "MiSans";
+      font-weight: 300;
+      letter-spacing: 0;
+    }
+
+    .composer input::placeholder {
+      color: rgba(255, 255, 255, .32);
+    }
+
+    .round-mini {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      flex: 0 0 auto;
+      transition: background .16s ease, transform .16s ease;
+    }
+
+    .round-mini:hover,
+    .round-mini:focus-visible {
+      background: rgba(255, 255, 255, .08);
+      outline: 0;
+    }
+
+    .round-mini:active {
+      transform: scale(.94);
+    }
+
+    .round-mini.plus {
+      box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, .92);
+    }
+
+    .round-mini.plus .icon {
+      width: 17px;
+      height: 17px;
+    }
+
+    .home .round-mini.plus {
+      box-shadow: none;
+    }
+
+    .expert .round-mini.plus {
+      box-shadow: none;
+    }
+
+    .send-icon {
+      display: none;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .send-icon img {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .composer.has-attachment .plus .asset-icon {
+      display: none;
+    }
+
+    .composer.has-attachment .plus {
+      display: grid;
+      place-items: center;
+    }
+
+    .composer.has-attachment .send-icon {
+      display: grid;
+    }
+
+    .drawer-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 25;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .24s ease;
+    }
+
+    .drawer-shade {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      background: rgba(0, 0, 0, .5);
+      opacity: 0;
+      transition: opacity .24s ease;
+    }
+
+    .drawer {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 288px;
+      padding: 75px 16px 0;
+      transform: translateX(-102%);
+      border-radius: 0 4px 4px 0;
+      background:
+        radial-gradient(circle at 8% 2%, rgba(165, 112, 61, .38), transparent 28%),
+        linear-gradient(180deg, #19120e 0%, #100c0a 68%, #0e0a08 100%);
+      box-shadow: 18px 0 42px rgba(0, 0, 0, .42);
+      transition: transform .28s cubic-bezier(.2, .9, .2, 1);
+    }
+
+    .app.drawer-open .drawer-layer {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    .app.drawer-open .drawer-shade {
+      opacity: 1;
+    }
+
+    .app.drawer-open .drawer {
+      transform: translateX(0);
+    }
+
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 0 1px;
+    }
+
+    .profile-avatar {
+      width: 54px;
+      height: 54px;
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, .22);
+    }
+
+    .profile-row strong {
+      font-size: 16px;
+      letter-spacing: 0;
+      font-family: "MiSans";
+      font-weight: 400;
+      flex: 1;
+    }
+
+    .new-chat {
+      width: 100%;
+      height: 48px;
+      margin-top: 29px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: #fff;
+      font-size: 14px;
+      font-family: "MiSans";
+      font-weight: 300;
+      background: rgba(71, 59, 50, .82);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+    }
+
+    .new-chat .asset-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .drawer-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 27px;
+      font-size: 15px;
+      font-family: "MiSans";
+      font-weight: 300;
+      color: #f4eee6;
+    }
+
+    .store-list {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .store-agent {
+      display: grid;
+      gap: 7px;
+      justify-items: center;
+      min-width: 0;
+      background: transparent;
+      color: rgba(255, 255, 255, .58);
+    }
+
+    .store-agent img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(224, 164, 88, .6);
+      box-shadow: 0 0 17px rgba(217, 146, 64, .15);
+    }
+
+    .store-agent span {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 12px;
+      font-family: "MiSans";
+      font-weight: 300;
+      text-align: center;
+      letter-spacing: 0;
+    }
+
+    .drawer-divider {
+      height: 1px;
+      margin: 24px 0 20px;
+      background: rgba(255, 255, 255, .11);
+    }
+
+    .dialogue-title {
+      margin: 0;
+      color: #f6f1ec;
+      font-size: 15px;
+      font-family: "MiSans";
+      font-weight: 400;
+    }
+
+    .empty-state {
+      position: absolute;
+      top: 568px;
+      left: 0;
+      right: 0;
+      color: rgba(255, 255, 255, .31);
+      text-align: center;
+      font-size: 13px;
+      font-family: "MiSans";
+      font-weight: 300;
+    }
+
+    .expert {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(22px);
+      transition: opacity .22s ease, transform .26s ease;
+    }
+
+    .app[data-view="expert"] .home {
+      opacity: 0;
+      transform: translateX(-18px);
+      pointer-events: none;
+    }
+
+    .app[data-view="expert"] .expert {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .expert-scroll {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      padding: 100px 14px 94px;
+      scrollbar-width: none;
+    }
+
+    .expert[data-mode="initial"] .analysis-flow {
+      display: none;
+    }
+
+    .expert[data-mode="analysis"] .initial-flow {
+      display: none;
+    }
+
+    .expert-scroll::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    .agent-hero {
+      display: grid;
+      justify-items: center;
+      gap: 19px;
+      padding-top: 3px;
+    }
+
+    .initial-flow .agent-hero {
+      gap: 6px;
+      padding-top: 4px;
+    }
+
+    .agent-hero img.avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: none;
+    }
+
+    .agent-intro {
+      margin: 0;
+      width: 100%;
+      color: rgba(248, 243, 237, .74);
+      font-size: 12px;
+      line-height: 1.72;
+      font-weight: 640;
+      letter-spacing: 0;
+    }
+
+    .initial-flow .agent-intro {
+      color: rgba(248, 243, 237, .76);
+      font-size: 14px;
+      line-height: 1.72;
+      font-weight: 300;
+    }
+
+    .expert-prompts {
+      display: grid;
+      gap: 16px;
+      justify-items: start;
+      margin-top: 7px;
+    }
+
+    .expert-prompt {
+      height: 36px;
+      padding: 0 13px;
+      border-radius: 8px;
+      color: #fff;
+      text-align: left;
+      font-size: 12px;
+      font-family: "MiSans";
+      font-weight: 300;
+      letter-spacing: 0;
+      background: #33291f;
+      box-shadow: inset 0 0 8px rgba(255, 255, 255, .3);
+    }
+
+    .video-card {
+      position: relative;
+      width: 263px;
+      height: 147px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #241b16;
+      box-shadow: 0 18px 38px rgba(0, 0, 0, .32);
+    }
+
+    .video-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .play {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 47px;
+      height: 47px;
+      transform: translate(-50%, -50%);
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #f1c681;
+      background: rgba(46, 40, 35, .65);
+      backdrop-filter: blur(11px);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
+    }
+
+    .play .icon {
+      width: 24px;
+      height: 24px;
+      margin-left: 3px;
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .bubble {
+      max-width: 272px;
+      padding: 14px 16px;
+      border-radius: 2px;
+      background: rgba(45, 35, 31, .82);
+      color: #fdf9f4;
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .bubble.user {
+      margin: 18px 0 0 auto;
+      max-width: 72px;
+      text-align: center;
+      border-radius: 15px 15px 2px 15px;
+    }
+
+    .thinking {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 30px;
+      color: #bfa27a;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .star {
+      width: 16px;
+      height: 16px;
+      color: #e1b063;
+      filter: drop-shadow(0 0 6px rgba(219, 162, 88, .42));
+    }
+
+    .section-copy {
+      margin: 19px 0 17px;
+      color: rgba(248, 243, 237, .76);
+      font-size: 12px;
+      line-height: 1.78;
+      font-weight: 640;
+    }
+
+    .section-copy strong {
+      color: #efe1d1;
+      font-weight: 760;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 19px;
+      bottom: 20px;
+      width: 1px;
+      background: rgba(175, 120, 71, .22);
+    }
+
+    .thread-row {
+      position: relative;
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 7px;
+      align-items: start;
+    }
+
+    .marker {
+      position: relative;
+      z-index: 1;
+      width: 18px;
+      height: 18px;
+      margin-top: 4px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #fff9ef;
+      font-size: 10px;
+      font-weight: 800;
+      background: #b89372;
+      box-shadow: 0 0 0 2px rgba(72, 45, 31, .82);
+    }
+
+    .thread-card {
+      padding: 12px 10px 11px;
+      border-radius: 12px;
+      background: rgba(45, 35, 31, .94);
+      box-shadow: var(--shadow);
+    }
+
+    .thread-card h3 {
+      margin: 0 0 5px;
+      color: #f6e6d3;
+      font-size: 13px;
+      line-height: 1.18;
+      font-weight: 790;
+      letter-spacing: 0;
+    }
+
+    .thread-card p {
+      margin: 0;
+      color: rgba(249, 237, 224, .7);
+      font-size: 10px;
+      line-height: 1.48;
+      font-weight: 620;
+      letter-spacing: 0;
+    }
+
+    .thread-card img {
+      width: 100%;
+      height: 104px;
+      display: block;
+      margin-top: 8px;
+      object-fit: cover;
+      border-radius: 9px;
+    }
+
+    .fine-print {
+      margin: 18px 0 0;
+      color: rgba(235, 217, 198, .48);
+      font-size: 10px;
+      line-height: 1.75;
+      font-weight: 580;
+    }
+
+    .block-title {
+      margin: 18px 0 12px;
+      color: #fff4e8;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .advice-card {
+      padding: 19px 18px 17px;
+      border-radius: 15px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, .18), transparent 34%),
+        linear-gradient(180deg, rgba(73, 58, 46, .96), rgba(48, 38, 31, .94));
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .18),
+        inset 0 1px 0 rgba(255, 255, 255, .14),
+        0 16px 34px rgba(0, 0, 0, .28);
+    }
+
+    .advice-item {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 11px;
+      padding: 0 0 15px;
+      color: rgba(255, 245, 236, .8);
+    }
+
+    .advice-item + .advice-item {
+      border-top: 1px solid rgba(255, 255, 255, .08);
+      padding-top: 14px;
+    }
+
+    .advice-icon {
+      width: 27px;
+      height: 27px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #c8a07b;
+      background: rgba(43, 34, 29, .84);
+    }
+
+    .advice-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #fff2e7;
+      font-size: 13px;
+      line-height: 1.1;
+      font-weight: 790;
+    }
+
+    .advice-item span {
+      display: block;
+      color: rgba(246, 232, 216, .58);
+      font-size: 10px;
+      line-height: 1.35;
+      font-weight: 620;
+    }
+
+    .assistant-bubble {
+      display: inline-block;
+      margin-top: 19px;
+      padding: 12px 14px;
+      border-radius: 17px 17px 17px 2px;
+      color: #fff9f2;
+      font-size: 13px;
+      font-weight: 650;
+      background: rgba(49, 40, 35, .92);
+    }
+
+    .publish-card {
+      margin-top: 19px;
+      padding: 16px 14px 14px;
+      border-radius: 15px;
+      color: rgba(255, 244, 233, .8);
+      font-size: 12px;
+      line-height: 1.5;
+      font-weight: 650;
+      background: rgba(41, 32, 29, .94);
+      box-shadow: 0 15px 32px rgba(0, 0, 0, .28);
+    }
+
+    .jump-btn {
+      width: 100%;
+      height: 35px;
+      margin-top: 12px;
+      border-radius: 18px;
+      color: #fff9ed;
+      font-size: 13px;
+      font-weight: 800;
+      background: linear-gradient(180deg, #bc8755, #80562e);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 233, 197, .35),
+        inset 0 1px 5px rgba(255, 255, 255, .28),
+        0 5px 12px rgba(0, 0, 0, .24);
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: 116px;
+      z-index: 40;
+      max-width: 300px;
+      padding: 10px 14px;
+      transform: translate(-50%, 18px);
+      opacity: 0;
+      pointer-events: none;
+      border-radius: 14px;
+      color: #fff8ef;
+      font-size: 13px;
+      font-weight: 690;
+      background: rgba(39, 31, 27, .94);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .42), inset 0 0 0 1px rgba(255, 255, 255, .12);
+      transition: opacity .22s ease, transform .22s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 359px), (max-height: 799px) {
+      .stage {
+        transform: scale(min(calc(100vw / 360), calc(100vh / 800)));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="device" aria-label="Android 360x800dp 预览">
+      <main class="screen">
+        <section class="app" data-view="home">
+          <div class="status-bar">
+            <span>9:30</span>
+            <span class="system-icons" aria-hidden="true">
+              <svg class="wifi-icon" viewBox="0 0 24 18">
+                <path d="M2 5.5C7.8.2 16.2.2 22 5.5l-3.1 3.1c-4-3.4-9.8-3.4-13.8 0L2 5.5Z" fill="currentColor" opacity=".22"></path>
+                <path d="M7.1 10.3c2.9-2.2 6.9-2.2 9.8 0L12 15.2l-4.9-4.9Z" fill="currentColor"></path>
+              </svg>
+              <svg class="signal-icon" viewBox="0 0 20 20">
+                <path d="M2 18h16V2L2 18Z" fill="currentColor"></path>
+              </svg>
+              <span class="battery"></span>
+            </span>
+          </div>
+
+          <section class="home" aria-label="首页" data-mode="idle">
+            <div class="top-actions">
+              <button class="icon-btn menu-orb asset-menu" type="button" data-open-drawer aria-label="打开侧边栏">
+                <img class="back-icon" src="assets/back-new.png" alt="">
+              </button>
+              <div class="header-tools">
+                <button class="icon-btn" type="button" data-toggle-mute aria-label="静音切换">
+                  <img class="asset-icon" data-volume-icon src="assets/volume-muted.svg" alt="">
+                </button>
+                <button class="icon-btn" type="button" data-new-chat aria-label="新建对话">
+                  <img class="asset-icon" src="assets/message-add.svg" alt="">
+                </button>
+              </div>
+            </div>
+
+            <div class="home-main">
+              <img class="mascot" src="assets/agent-home-avatar-new.png" alt="Cielva Claw 头像">
+              <div class="greeting">
+                <span class="greeting-text">Hi, 我是Cielva Claw</span>
+                <span class="badge">Beta</span>
+              </div>
+              <p class="subline">初次见面很开心，向我提问吧！</p>
+              <div class="suggestions">
+                <button class="suggestion" type="button" data-suggestion="report">每日 16:00 整理周报并发送至我的邮箱</button>
+                <button class="suggestion" type="button" data-suggestion="clean">自动整理手机应用，卸载不常用软件</button>
+                <button class="suggestion" type="button" data-suggestion="social" data-nav="expert">结合实时热点每日产出 3 条社媒推文</button>
+              </div>
+            </div>
+
+            <div class="home-chat" aria-live="polite">
+              <img class="home-chat-avatar" src="assets/agent-home-avatar-new.png" alt="Cielva Claw 头像">
+              <div class="home-chat-greeting">
+                <span class="greeting-text">Hi, 我是Cielva Claw</span>
+                <span class="badge">Beta</span>
+              </div>
+              <p class="home-chat-subline">初次见面很开心，向我提问吧！</p>
+              <button class="home-user-bubble" type="button" data-home-user-message></button>
+              <div class="home-thinking-card">
+                <svg class="home-thinking-star" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 2 14.8 9.2 22 12l-7.2 2.8L12 22l-2.8-7.2L2 12l7.2-2.8L12 2Z" fill="currentColor"></path>
+                </svg>
+                <span>思考中<span class="thinking-dots" aria-hidden="true"></span></span>
+              </div>
+              <div class="home-answer-card" data-home-answer>我先梳理你的问题，再给出可执行的步骤。</div>
+            </div>
+
+            <form class="composer" data-composer>
+              <div class="attachment-row" aria-hidden="true">
+                <img class="attachment-thumb" src="assets/attachment-thumb.png" alt="">
+                <button class="attachment-add" type="button" aria-label="继续添加图片">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                </button>
+              </div>
+              <div class="composer-main">
+                <button class="round-mini" type="button" aria-label="相机">
+                  <img class="asset-icon" src="assets/camera.svg" alt="">
+                </button>
+                <input name="message" autocomplete="off" placeholder="发信息..." aria-label="输入消息">
+                <button class="round-mini" type="button" data-voice aria-label="语音">
+                  <img class="asset-icon" src="assets/voice.svg" alt="">
+                </button>
+                <button class="round-mini plus" type="button" data-plus aria-label="更多">
+                  <img class="asset-icon" src="assets/add-more.svg" alt="">
+                  <span class="send-icon" aria-hidden="true">
+                    <img src="assets/send-button.svg" alt="">
+                  </span>
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="expert" aria-label="社媒运营专家" data-mode="initial">
+            <div class="chat-header">
+              <button class="icon-btn menu-orb" type="button" data-open-drawer aria-label="打开侧边栏">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M4 12h13M4 17h10"></path></svg>
+              </button>
+              <h1>社媒运营专家</h1>
+              <div class="header-tools">
+                <button class="icon-btn" type="button" data-toggle-mute aria-label="静音切换">
+                  <img class="asset-icon" data-volume-icon src="assets/volume-muted.svg" alt="">
+                </button>
+                <button class="icon-btn" type="button" data-new-chat aria-label="新建对话">
+                  <img class="asset-icon" src="assets/message-add.svg" alt="">
+                </button>
+              </div>
+            </div>
+
+            <div class="expert-scroll" id="expertScroll">
+              <div class="initial-flow">
+                <div class="agent-hero">
+                  <img class="avatar" src="assets/social-expert-avatar.png" alt="社媒运营专家头像">
+                  <p class="agent-intro">嗨～我是你的社媒运营小助手！账号定位、爆款选题、吸睛文案、数据复盘都能帮你搞定，陪你一起把账号运营得更出彩～</p>
+                </div>
+                <div class="expert-prompts">
+                  <button class="expert-prompt" type="button" data-fill-prompt="帮我规划一下账号的差异化人设">帮我规划一下账号的差异化人设</button>
+                  <button class="expert-prompt" type="button" data-fill-prompt="帮我做一份7天选题规划">帮我做一份7天选题规划</button>
+                  <button class="expert-prompt" type="button" data-fill-prompt="帮我分析一下我的账号，怎么提升曝光？">帮我分析一下我的账号，怎么提升曝光？</button>
+                </div>
+              </div>
+
+              <div class="analysis-flow">
+                <div class="agent-hero">
+                <img class="avatar" src="assets/social-expert-avatar.png" alt="社媒运营专家头像">
+                <p class="agent-intro">嗨～我是你的社媒运营小助手！账号定位、爆款选题、吸睛文案、数据复盘都能帮你搞定，陪你一起把账号运营得更出彩～</p>
+                <button class="video-card" type="button" data-play aria-label="播放视频">
+                  <img src="assets/hero-video.png" alt="DREAME AURORA 广告视频缩略图">
+                  <span class="play">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7Z"></path></svg>
+                  </span>
+                </button>
+                <div class="bubble">帮我把这个视频拆解成多条facebook图文推文</div>
+                </div>
+
+              <div class="thinking">
+                <svg class="star" viewBox="0 0 24 24"><path d="M12 2 14.8 9.2 22 12l-7.2 2.8L12 22l-2.8-7.2L2 12l7.2-2.8L12 2Z" fill="currentColor"></path></svg>
+                <span>思考中...</span>
+              </div>
+
+              <p class="section-copy">已将<strong>DREAME AURORA</strong> 的广告大片拆解 4 条 facebook 推文线程：</p>
+              <p class="section-copy">推文线程（共 4 条）</p>
+
+              <div class="timeline">
+                <article class="thread-row">
+                  <span class="marker">1</span>
+                  <div class="thread-card">
+                    <h3>开场·视觉冲击</h3>
+                    <p>当手机变成艺术品，你还会只把它当手机吗？DREAME AURORA 追逐极光系列，以科技与艺术点亮第一眼。</p>
+                    <p>#DremeAurora #追觅极光 #手机设计</p>
+                    <img src="assets/thread-1.png" alt="列车与极光场景">
+                  </div>
+                </article>
+
+                <article class="thread-row">
+                  <span class="marker">2</span>
+                  <div class="thread-card">
+                    <h3>金色透明人形·梦幻场景</h3>
+                    <p>金色透明人影捧起花中浮雕的梦之上，阳光穿透它的每一层质感。</p>
+                    <p>#DREAMEAURORA #材质灵感 #手机摄影</p>
+                    <img src="assets/thread-2.png" alt="金色透明人形与花朵场景">
+                  </div>
+                </article>
+
+                <article class="thread-row">
+                  <span class="marker">3</span>
+                  <div class="thread-card">
+                    <h3>蜜格金款·细节炸裂</h3>
+                    <p>透明镀金纹理融合未来质感，每一处纹理都像一段视觉故事。</p>
+                    <p>#手机工艺 #科技与艺术 #设计细节</p>
+                    <img src="assets/thread-3.png" alt="金色人物在室内展示手机">
+                  </div>
+                </article>
+
+                <article class="thread-row">
+                  <span class="marker">4</span>
+                  <div class="thread-card">
+                    <h3>蛇皮红双机·野性对话</h3>
+                    <p>左边：为野性美。右边：为精致美。不同风格，同样极光。</p>
+                    <p>#DremeAurora #视觉叙事 #双机设计</p>
+                    <img src="assets/thread-4.png" alt="两部手机与模特场景">
+                  </div>
+                </article>
+              </div>
+
+              <p class="fine-print">内容基于 DREAME AURORA 广告大片截图拆解，所有观点源自原文画面信息。</p>
+
+              <h2 class="block-title">发布建议</h2>
+              <section class="advice-card">
+                <div class="advice-item">
+                  <span class="advice-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+                  <div><strong>发布间隔</strong><span>每条间隔 2-4 小时，覆盖中午晚高峰</span></div>
+                </div>
+                <div class="advice-item">
+                  <span class="advice-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M7 3v4M17 3v4M4 8h16M5 5h14v16H5Z"></path></svg></span>
+                  <div><strong>最佳时间</strong><span>9:00 / 12:00 / 18:00 / 21:00（北京时间）</span></div>
+                </div>
+                <div class="advice-item">
+                  <span class="advice-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"></rect><path d="m4 15 4-4 4 4 2-2 6 6"></path></svg></span>
+                  <div><strong>配图</strong><span>每条推文搭配对应的原始图片</span></div>
+                </div>
+                <div class="advice-item">
+                  <span class="advice-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z"></path></svg></span>
+                  <div><strong>互动</strong><span>在 Tweet 4 和 Tweet 8 发起投票</span></div>
+                </div>
+                <div class="advice-item">
+                  <span class="advice-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M10 3 6 21M18 3l-4 18M4 8h16M3 16h16"></path></svg></span>
+                  <div><strong>标签</strong><span>主标签 #DremeAurora 每条必带</span></div>
+                </div>
+              </section>
+
+              <span class="assistant-bubble">需要我定时帮我发布这4条推文吗？</span>
+              <button class="bubble user" type="button" data-schedule>需要</button>
+              <section class="publish-card">
+                第一条推文已发布（Https://www.Facebook.Com/Groups/123987654）
+                <button class="jump-btn" type="button" data-jump>点击跳转</button>
+              </section>
+              </div>
+            </div>
+
+            <form class="composer" data-composer>
+              <div class="attachment-row" aria-hidden="true">
+                <img class="attachment-thumb" src="assets/attachment-thumb.png" alt="">
+                <button class="attachment-add" type="button" aria-label="继续添加图片">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                </button>
+              </div>
+              <div class="composer-main">
+                <button class="round-mini" type="button" aria-label="相机">
+                  <img class="asset-icon" src="assets/camera.svg" alt="">
+                </button>
+                <input name="message" autocomplete="off" placeholder="发信息或按住说话..." aria-label="输入消息">
+                <button class="round-mini" type="button" data-voice aria-label="语音">
+                  <img class="asset-icon" src="assets/voice.svg" alt="">
+                </button>
+                <button class="round-mini plus" type="button" data-plus aria-label="更多">
+                  <img class="asset-icon" src="assets/add-more.svg" alt="">
+                  <span class="send-icon" aria-hidden="true">
+                    <img src="assets/send-button.svg" alt="">
+                  </span>
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <div class="drawer-layer">
+            <button class="drawer-shade" type="button" data-close-drawer aria-label="关闭侧边栏"></button>
+            <aside class="drawer">
+              <div class="profile-row">
+                <img class="profile-avatar" src="assets/user-fanwu.png" alt="FAN.WU 头像">
+                <strong>FAN.WU</strong>
+                <button class="icon-btn" type="button" data-settings aria-label="设置">
+                  <img class="asset-icon" src="assets/settings.svg" alt="">
+                </button>
+              </div>
+              <button class="new-chat" type="button" data-new-chat>
+                <img class="asset-icon" src="assets/new-chat.svg" alt="">
+                新建对话
+              </button>
+              <div class="drawer-title">
+                <span>智能体商店</span>
+                <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg>
+              </div>
+              <div class="store-list">
+                <button class="store-agent" type="button" data-store>
+                  <img src="assets/finance-agent.png" alt="金融理财头像">
+                  <span>金融理财...</span>
+                </button>
+                <button class="store-agent" type="button" data-nav="expert" aria-label="打开社媒运营专家">
+                  <img src="assets/social-agent.png" alt="社媒运营头像">
+                  <span>社媒运营...</span>
+                </button>
+                <button class="store-agent" type="button" data-store>
+                  <img src="assets/video-agent.png" alt="视频创作头像">
+                  <span>视频创作...</span>
+                </button>
+                <button class="store-agent" type="button" data-store>
+                  <img src="assets/luxury-agent.png" alt="高奢服务头像">
+                  <span>高奢服务...</span>
+                </button>
+              </div>
+              <div class="drawer-divider"></div>
+              <p class="dialogue-title">对话列表</p>
+              <p class="empty-state">暂无历史对话</p>
+            </aside>
+          </div>
+
+          <div class="toast" role="status" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const app = document.querySelector(".app");
+    const toast = document.querySelector(".toast");
+    const expertScroll = document.getElementById("expertScroll");
+    const expert = document.querySelector(".expert");
+    const home = document.querySelector(".home");
+    const homeUserMessage = document.querySelector("[data-home-user-message]");
+    const homeAnswer = document.querySelector("[data-home-answer]");
+    let toastTimer = 0;
+    let homeReplyTimers = [];
+
+    function showToast(text) {
+      window.clearTimeout(toastTimer);
+      toast.textContent = text;
+      toast.classList.add("show");
+      toastTimer = window.setTimeout(() => toast.classList.remove("show"), 1700);
+    }
+
+    function clearHomeReplyTimers() {
+      homeReplyTimers.forEach((timer) => window.clearTimeout(timer));
+      homeReplyTimers = [];
+    }
+
+    function resetHomeReply() {
+      clearHomeReplyTimers();
+      home.dataset.mode = "idle";
+      homeUserMessage.textContent = "";
+      homeAnswer.textContent = "我先梳理你的问题，再给出可执行的步骤。";
+    }
+
+    function formatHomePrompt(value, hasAttachment) {
+      if (value) {
+        return value.length > 18 ? value.slice(0, 18) + "..." : value;
+      }
+      return hasAttachment ? "帮我分析这张图" : "你好";
+    }
+
+    function startHomeReply(value, hasAttachment) {
+      clearHomeReplyTimers();
+      homeUserMessage.textContent = formatHomePrompt(value, hasAttachment);
+      home.dataset.mode = "sent";
+      homeReplyTimers.push(window.setTimeout(() => {
+        home.dataset.mode = "thinking";
+      }, 520));
+      homeReplyTimers.push(window.setTimeout(() => {
+        homeAnswer.textContent = hasAttachment
+          ? "我已经收到图片，正在识别画面信息和可用线索。"
+          : "我会先拆解需求，再给出可以直接执行的方案。";
+        home.dataset.mode = "answering";
+      }, 1800));
+    }
+
+    async function requestKimiReply(message, hasAttachment, agent) {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ message, hasAttachment, agent })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "Kimi API 请求失败");
+      }
+      return data.reply || "我暂时没有拿到有效回复，请稍后再试。";
+    }
+
+    async function startKimiHomeReply(value, hasAttachment) {
+      clearHomeReplyTimers();
+      homeUserMessage.textContent = formatHomePrompt(value, hasAttachment);
+      home.dataset.mode = "sent";
+      homeReplyTimers.push(window.setTimeout(() => {
+        home.dataset.mode = "thinking";
+      }, 220));
+      try {
+        const reply = await requestKimiReply(value, hasAttachment, "home");
+        homeAnswer.textContent = reply;
+      } catch (error) {
+        homeAnswer.textContent = "Kimi 暂时没有连接成功，请稍后再试。";
+        showToast(error.message);
+      }
+      home.dataset.mode = "answering";
+    }
+
+    function setView(view) {
+      app.dataset.view = view;
+      closeDrawer();
+      document.querySelectorAll(".composer.has-attachment").forEach((form) => {
+        form.classList.remove("has-attachment");
+      });
+      document.querySelectorAll(".composer.is-typing").forEach((form) => {
+        form.classList.remove("is-typing");
+      });
+      if (view === "home") {
+        resetHomeReply();
+      }
+      if (view === "expert") {
+        expert.dataset.mode = "initial";
+        window.setTimeout(() => expertScroll.scrollTo({ top: 0, behavior: "smooth" }), 80);
+      }
+    }
+
+    function startExpertAnalysis() {
+      setView("expert");
+      expert.dataset.mode = "analysis";
+      window.setTimeout(() => expertScroll.scrollTo({ top: 0, behavior: "smooth" }), 80);
+    }
+
+    function openDrawer() {
+      app.classList.add("drawer-open");
+    }
+
+    function closeDrawer() {
+      app.classList.remove("drawer-open");
+    }
+
+    document.querySelectorAll("[data-open-drawer]").forEach((button) => {
+      button.addEventListener("click", openDrawer);
+    });
+
+    document.querySelectorAll("[data-close-drawer]").forEach((button) => {
+      button.addEventListener("click", closeDrawer);
+    });
+
+    document.querySelectorAll("[data-nav='expert']").forEach((button) => {
+      button.addEventListener("click", () => setView("expert"));
+    });
+
+    document.querySelectorAll("[data-new-chat]").forEach((button) => {
+      button.addEventListener("click", () => {
+        setView("home");
+        showToast("已创建新的对话");
+      });
+    });
+
+    document.querySelectorAll("[data-toggle-mute]").forEach((button) => {
+      button.addEventListener("click", () => {
+        button.classList.toggle("active");
+        const enabled = button.classList.contains("active");
+        const volumeIcon = button.querySelector("[data-volume-icon]");
+        if (volumeIcon) {
+          volumeIcon.src = enabled ? "assets/volume-speaker.svg" : "assets/volume-muted.svg";
+        }
+        showToast(enabled ? "已切换外放" : "已静音");
+      });
+    });
+
+    document.querySelectorAll("[data-suggestion]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const homeForm = document.querySelector(".home .composer");
+        const input = homeForm.querySelector("input");
+        input.value = button.textContent.trim();
+        homeForm.classList.remove("has-attachment");
+        homeForm.classList.add("is-typing");
+        homeForm.classList.add("has-text");
+        input.focus();
+      });
+    });
+
+    document.querySelectorAll("[data-fill-prompt]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.querySelector(".expert .composer input");
+        const form = input.closest(".composer");
+        input.value = button.dataset.fillPrompt;
+        form.classList.add("is-typing");
+        form.classList.add("has-text");
+        input.focus();
+      });
+    });
+
+    document.querySelectorAll("[data-store]").forEach((button) => {
+      button.addEventListener("click", () => showToast("该智能体已加入候选列表"));
+    });
+
+    document.querySelectorAll("[data-play]").forEach((button) => {
+      button.addEventListener("click", () => {
+        button.classList.toggle("playing");
+        showToast(button.classList.contains("playing") ? "视频已加入拆解队列" : "视频已暂停预览");
+      });
+    });
+
+    document.querySelectorAll("[data-schedule]").forEach((button) => {
+      button.addEventListener("click", () => {
+        button.textContent = "已确认";
+        showToast("已按建议时间排期发布");
+      });
+    });
+
+    document.querySelectorAll("[data-jump]").forEach((button) => {
+      button.addEventListener("click", () => {
+        button.textContent = "已打开";
+        showToast("已模拟打开 Facebook 链接");
+      });
+    });
+
+    document.querySelectorAll("[data-voice]").forEach((button) => {
+      button.addEventListener("click", () => showToast("语音输入已就绪"));
+    });
+
+    document.querySelectorAll("[data-plus]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const form = button.closest(".composer");
+        const input = form.querySelector("input");
+        if (form.classList.contains("has-attachment")) {
+          form.requestSubmit();
+          return;
+        }
+        if (input.value.trim()) {
+          form.requestSubmit();
+          return;
+        }
+        form.classList.add("has-attachment");
+        input.placeholder = "发消息...";
+        showToast("已添加图片");
+      });
+    });
+
+    document.querySelectorAll("[data-settings]").forEach((button) => {
+      button.addEventListener("click", () => showToast("账号设置"));
+    });
+
+    document.querySelectorAll("[data-composer]").forEach((form) => {
+      const typingInput = form.querySelector("input");
+      form.addEventListener("click", (event) => {
+        if ((form.closest(".home") || form.closest(".expert")) && form.classList.contains("has-attachment") && !event.target.closest("[data-plus]")) {
+          form.classList.remove("has-attachment");
+          form.classList.add("is-typing");
+          typingInput.focus();
+          return;
+        }
+        if ((form.closest(".home") || form.closest(".expert")) && !form.classList.contains("has-attachment") && !event.target.closest("button")) {
+          form.classList.add("is-typing");
+          typingInput.focus();
+        }
+      });
+
+      typingInput.addEventListener("input", () => {
+        const hasText = Boolean(typingInput.value.trim());
+        form.classList.toggle("is-typing", hasText || document.activeElement === typingInput);
+        form.classList.toggle("has-text", hasText);
+      });
+
+      typingInput.addEventListener("focus", () => {
+        form.classList.add("is-typing");
+      });
+
+      typingInput.addEventListener("blur", () => {
+        if (!typingInput.value.trim() && !form.classList.contains("has-attachment")) {
+          form.classList.remove("is-typing");
+        }
+      });
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const input = form.querySelector("input");
+        const value = input.value.trim();
+        if (!value) {
+          if (!form.classList.contains("has-attachment")) {
+            showToast("请输入内容");
+            return;
+          }
+        }
+        if (form.closest(".expert")) {
+          if (value || form.classList.contains("has-attachment")) {
+            showToast("正在请求 Kimi");
+            try {
+              const reply = await requestKimiReply(value, form.classList.contains("has-attachment"), "expert");
+              showToast(reply.slice(0, 36));
+            } catch (error) {
+              showToast(error.message);
+            }
+          } else {
+            startExpertAnalysis();
+          }
+          input.value = "";
+          form.classList.remove("has-attachment");
+          form.classList.remove("is-typing");
+          form.classList.remove("has-text");
+          return;
+        }
+        startKimiHomeReply(value, form.classList.contains("has-attachment"));
+        input.value = "";
+        form.classList.remove("has-attachment");
+        form.classList.remove("is-typing");
+        form.classList.remove("has-text");
+      });
+    });
+  </script>
+</body>
+</html>
